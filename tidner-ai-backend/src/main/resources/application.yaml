@@ -2,3 +2,9 @@ quarkus:
   langchain4j:
     openai:
       api-key: ${QUARKUS_AI_OPEN_AI_API_KEY}
+
+  # Mongo DB
+  mongodb:
+    devservices:
+      port: 63556
+    database: tinder-ai
