@@ -29,8 +29,8 @@ public class TinderAIApplication {
 
   void onStart(@Observes StartupEvent ev) {
     Log.info("%!%!%!%!%!%! ON START %!%!%!%!%!%!");
-    profileRepo.deleteAll();
-    conversationRepo.deleteAll();
+    // profileRepo.deleteAll();
+    // conversationRepo.deleteAll();
 
 
     var profile = Profile.builder()
@@ -61,8 +61,8 @@ public class TinderAIApplication {
     //     .profileId("1")
     //     .messages(List.of(new ChatMessage("Hello", profile.id(), LocalDateTime.now())))
     //     .build();
-    profileRepo.persist(profile);
-    profileRepo.persist(profile2);
+    // profileRepo.persist(profile);
+    // profileRepo.persist(profile2);
     // conversationRepo.persist(conversation);
     
     profileRepo.listAll().forEach(System.out::println);

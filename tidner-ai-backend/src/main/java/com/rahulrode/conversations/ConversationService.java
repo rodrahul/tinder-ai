@@ -30,6 +30,19 @@ public class ConversationService {
 
   /**
    * 
+   * @param conversationId
+   * @return
+   */
+  public Conversation getConversation(String conversationId) {
+    var conversation = conversationRepo
+        .findByIdOptional(conversationId)
+        .orElseThrow(() -> new ResponseStatusException(404, "Conversation not found"));
+    
+    return conversation;
+  }
+
+  /**
+   * 
    * @param request
    * @return
    */
