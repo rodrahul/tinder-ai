@@ -1,4 +1,4 @@
-package com.rahulrode.profiles;
+package com.rahulrode.profiles.models;
 
 import org.bson.codecs.pojo.annotations.BsonId;
 

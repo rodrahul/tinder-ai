@@ -1,4 +1,7 @@
 quarkus:
+  application:
+    name: tinder-ai-backend
+
   langchain4j:
     openai:
       api-key: ${QUARKUS_AI_OPEN_AI_API_KEY}

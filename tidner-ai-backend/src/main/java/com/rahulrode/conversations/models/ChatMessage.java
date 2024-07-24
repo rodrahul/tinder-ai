@@ -1,4 +1,4 @@
-package com.rahulrode.conversations;
+package com.rahulrode.conversations.models;
 
 import java.time.LocalDateTime;
 
