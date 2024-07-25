@@ -1,6 +1,11 @@
 quarkus:
   application:
     name: tinder-ai-backend
+  
+  http:
+    cors:
+      ~: true
+      origins: "*"
 
   langchain4j:
     openai:

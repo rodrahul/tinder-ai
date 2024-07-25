@@ -1,6 +1,5 @@
 package com.rahulrode.profiles;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,9 +25,7 @@ public class ProfileCreationService {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    // FileReader reader = new FileReader(jsonFile);
     var ins = Files.newInputStream(Path.of(jsonFile));
-    // var buffer = Files.newBufferedReader(Path.of(jsonFile));
 
     var profiles = mapper.readValue(ins, new TypeReference<List<Profile>>() {
     });

@@ -2,9 +2,7 @@ package com.rahulrode.matches;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.rahulrode.conversations.ConversationRepository;
 import com.rahulrode.conversations.models.Conversation;
