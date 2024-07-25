@@ -13,8 +13,24 @@ const fetchRandomProfile = async () => {
     throw new Error('Failed to fetch random profile')
 
   return response.json();
-
 }
+
+const saveMatch = async (profileId) => {
+  var endpoint = host + 'matches';
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ profileId })
+  })
+
+  if (!response.ok)
+    throw new Error('Failed to fetch random profile')
+
+  return response.json();
+}
+
 
 /**
  * Profile selector
@@ -37,11 +53,11 @@ const ProfileSelector = ({ profile, onSwipe }) => (
       {/* Swipe Buttons */}
       <div className='flex justify-center space-x-4 p-4'>
         <button className='bg-red-500 rounded-full p-4 text-white hover:bg-red-700'
-          onClick={() => onSwipe("left")}>
+          onClick={() => onSwipe(profile.id, "left")}>
           <X size={24} />
         </button>
         <button className='bg-green-500 rounded-full p-4 text-white hover:bg-green-700'
-          onClick={() => onSwipe("right")}>
+          onClick={() => onSwipe(profile.id, "right")}>
           <Heart size={24} />
         </button>
       </div>
@@ -150,9 +166,11 @@ function App() {
   const [currentScreen, setCurrentScreen] = useState('profile') // Default value of current screen is profile
   const [currentProfile, setCurrentProfile] = useState(null)
 
-  const onSwipe = (direction) => { 
-    if (direction === 'right') { 
+  const onSwipe = (profileId, direction) => {
+    if (direction === 'right') {
+      // Register a Match with the backed
       console.log('liked')
+      saveMatch(profileId)
     } else {
       console.log('disliked')
     }
