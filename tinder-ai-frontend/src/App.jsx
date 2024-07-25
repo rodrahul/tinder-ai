@@ -37,17 +37,20 @@ const ProfileSelector = () => (
  * 
  * @returns 
  */
-const MatchesList = () => (
+const MatchesList = ({ onSelectMatch }) => (
   <div className='rounded-lg shadow-lg p-4'>
     <h2 className='text-2xl font-bold mb-4'>Matches</h2>
     <ul >
 
       {[
         { id: 1, firstName: 'Foo', lastName: 'bar', age: 33, imageUrl: 'http://localhost:8080/images/0e985a4b-6944-4dec-b0f7-4a4453592dd0.jpg' },
-        { id: 1, firstName: 'this', lastName: 'that', age: 37, imageUrl: 'http://localhost:8080/images/0f242a88-609b-4329-b96d-e0486cd2c371.jpg' },
+        { id: 2, firstName: 'this', lastName: 'that', age: 37, imageUrl: 'http://localhost:8080/images/0f242a88-609b-4329-b96d-e0486cd2c371.jpg' },
       ].map(match => (
         <li key={match.id} className='mb-2'>
-          <button className='flex w-full hover:bg-gray-100 rounded items-center'>
+          <button
+            className='flex w-full hover:bg-gray-100 rounded items-center'
+            onClick={onSelectMatch}
+          >
             <img src={match.imageUrl} alt="" className='size-20 mr-4 rounded-full' />
             <span>
               <h3 className='font-bold'>{match.firstName} {match.lastName}</h3>
@@ -113,7 +116,7 @@ function App() {
       case 'profile':
         return <ProfileSelector />
       case 'matches':
-        return <MatchesList />
+        return <MatchesList onSelectMatch={() => setCurrentScreen('chat')} />
       case 'chat':
         return <ChatScreen />
     }
