@@ -1,36 +1,52 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css'
 import { User, MessageCircle, X, Heart } from 'lucide-react'
+
+
+const host = 'http://localhost:8080/';
+
+const fetchRandomProfile = async () => {
+  var endpoint = host + 'profiles/random';
+  const response = await fetch(endpoint)
+
+  if (!response.ok)
+    throw new Error('Failed to fetch random profile')
+
+  return response.json();
+
+}
 
 /**
  * Profile selector
  * @returns 
  */
-const ProfileSelector = () => (
-  <div className='rounded-lg overflow-hidden bg-white shadow-lg'>
-    <div className='relative'>
-      <img src='http://localhost:8080/images/0e985a4b-6944-4dec-b0f7-4a4453592dd0.jpg' alt='' />
-      <div className='absolute bottom-0 left-0 right-0 text-white p-4 bg-gradient-to-t from-black'>
-        <h2 className='text-3xl font-bold'>Foo Bar, 30</h2>
+const ProfileSelector = ({ profile, onSwipe }) => (
+  profile ? (
+    <div className='rounded-lg overflow-hidden bg-white shadow-lg'>
+      <div className='relative'>
+        <img src={host + '/images/' + profile.imageUrl} alt='' />
+        <div className='absolute bottom-0 left-0 right-0 text-white p-4 bg-gradient-to-t from-black'>
+          <h2 className='text-3xl font-bold'>{profile.firstName} {profile.lastName}, {profile.age}</h2>
+        </div>
+      </div>
+
+      <div className='p-4'>
+        <p className='text-gray-600 mb-'>{profile.bio}</p>
+      </div>
+
+      {/* Swipe Buttons */}
+      <div className='flex justify-center space-x-4 p-4'>
+        <button className='bg-red-500 rounded-full p-4 text-white hover:bg-red-700'
+          onClick={() => onSwipe("left")}>
+          <X size={24} />
+        </button>
+        <button className='bg-green-500 rounded-full p-4 text-white hover:bg-green-700'
+          onClick={() => onSwipe("right")}>
+          <Heart size={24} />
+        </button>
       </div>
     </div>
-
-    <div className='p-4'>
-      <p className='text-gray-600 mb-'>I'm a sf engine with aglhlasd</p>
-    </div>
-
-    {/* Swipe Buttons */}
-    <div className='flex justify-center space-x-4 p-4'>
-      <button className='bg-red-500 rounded-full p-4 text-white hover:bg-red-700'
-        onClick={() => console.log("swipe left")}>
-        <X size={24} />
-      </button>
-      <button className='bg-green-500 rounded-full p-4 text-white hover:bg-green-700'
-        onClick={() => console.log("swipe right")}>
-        <Heart size={24} />
-      </button>
-    </div>
-  </div>
+  ) : <div> Loading ...</div>
 )
 
 /**
@@ -63,6 +79,10 @@ const MatchesList = ({ onSelectMatch }) => (
 );
 
 
+/**
+ * 
+ * @returns 
+ */
 const ChatScreen = () => {
   const [input, setInput] = useState('');
 
@@ -107,14 +127,43 @@ const ChatScreen = () => {
 
 }
 
+/**
+ * 
+ * @returns 
+ */
 function App() {
 
+  const loadRandomProfile = async () => {
+    try {
+      const profile = await fetchRandomProfile();
+      setCurrentProfile(profile);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  // side effect to call the loadRandomProfile when App() is loaded
+  useEffect(() => {
+    loadRandomProfile();
+  }, {})
+
   const [currentScreen, setCurrentScreen] = useState('profile') // Default value of current screen is profile
+  const [currentProfile, setCurrentProfile] = useState(null)
+
+  const onSwipe = (direction) => { 
+    if (direction === 'right') { 
+      console.log('liked')
+    } else {
+      console.log('disliked')
+    }
+    loadRandomProfile();
+  }
+
 
   const renderScreen = () => {
     switch (currentScreen) {
       case 'profile':
-        return <ProfileSelector />
+        return <ProfileSelector profile={currentProfile} onSwipe={onSwipe} />
       case 'matches':
         return <MatchesList onSelectMatch={() => setCurrentScreen('chat')} />
       case 'chat':
