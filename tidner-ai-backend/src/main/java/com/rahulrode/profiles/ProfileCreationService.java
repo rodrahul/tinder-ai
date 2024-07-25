@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rahulrode.profiles.models.Gender;
 import com.rahulrode.profiles.models.Profile;
 
 import jakarta.inject.Inject;
@@ -33,9 +34,22 @@ public class ProfileCreationService {
     });
 
     profiles.stream()
-        .filter(p -> profileRepository.findById(p.id()) != null)
+        .filter(p -> profileRepository.findById(p.id()) == null)
         .forEach(profileRepository::persist);
 
+    var myProfile = Profile.builder()
+        .id("1")
+        .firstName("Rahul")
+        .lastName("Rode")
+        .age(40)
+        .ethnicity("Indian")
+        .gender(Gender.MALE)
+        .bio("Software Programmer")
+        .imageUrl("foo.jpg")
+        .myersBriggsPersonalityType("INTP")
+        .build();
+    if (profileRepository.findById(myProfile.id()) == null)
+      profileRepository.persist(myProfile);
   }
 
 }

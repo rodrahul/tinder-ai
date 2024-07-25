@@ -1,13 +1,10 @@
 package com.rahulrode.conversations;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.UUID;
 
 import com.rahulrode.conversations.models.ChatMessage;
 import com.rahulrode.conversations.models.ChatMessageCreateDTO;
 import com.rahulrode.conversations.models.Conversation;
-import com.rahulrode.conversations.models.ConversationCreateDTO;
 import com.rahulrode.exception.ResponseStatusException;
 import com.rahulrode.profiles.ProfileRepository;
 
@@ -37,26 +34,7 @@ public class ConversationService {
     var conversation = conversationRepo
         .findByIdOptional(conversationId)
         .orElseThrow(() -> new ResponseStatusException(404, "Conversation not found"));
-    
-    return conversation;
-  }
 
-  /**
-   * 
-   * @param request
-   * @return
-   */
-  public Conversation createConversation(@Valid ConversationCreateDTO request) {
-
-    validate(request);
-
-    var conversation = Conversation.builder()
-        .id(UUID.randomUUID().toString())
-        .profileId(request.profileId())
-        .messages(Collections.emptyList())
-        .build();
-
-    conversationRepo.persist(conversation);
     return conversation;
   }
 
@@ -83,16 +61,4 @@ public class ConversationService {
     conversationRepo.update(conversation);
     return conversation;
   }
-
-  /**
-   * 
-   * @param request
-   */
-  private void validate(ConversationCreateDTO request) {
-    profileRepo
-        .findByIdOptional(request.profileId())
-        .orElseThrow(() -> new ResponseStatusException(404, "profile not found"));
-
-  }
-
 }
