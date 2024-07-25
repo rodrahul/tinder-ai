@@ -41,5 +41,5 @@ nb-configuration.xml
 
 # Plugin directory
 /.quarkus/cli/plugins/
-tidner-ai-backend/profiles.json
+tinder-ai-backend/profiles.json
 **/static.images/
