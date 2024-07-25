@@ -42,4 +42,4 @@ nb-configuration.xml
 # Plugin directory
 /.quarkus/cli/plugins/
 tinder-ai-backend/profiles.json
-**/static.images/
+**/images/
