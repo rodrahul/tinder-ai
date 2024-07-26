@@ -47,6 +47,25 @@ const fetchConversation = async (conversationId) => {
   return response.json();
 };
 
+const sendMessage = async (conversationId, messageText) => {
+  // When the user is sending a messagge the authorId is always 1
+  var endpoint = host + "conversations/" + conversationId;
+  var chatMessage = {
+    messageText: messageText,
+    authorId: 1,
+  };
+  const response = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(chatMessage),
+  });
+
+  if (!response.ok) throw new Error("Failed to send chat message");
+
+  return response.json();
+};
 /**
  * Profile selector
  * @returns
@@ -91,14 +110,15 @@ const ProfileSelector = ({ profile, onSwipe }) =>
  *
  * @returns
  */
-const ChatScreen = ({ currentMatch, conversation }) => {
+const ChatScreen = ({ currentMatch, conversation, onSend }) => {
   const [input, setInput] = useState("");
 
   const handleSend = () => {
     if (input.trim()) {
-      console.log(input);
+      onSend(conversation.id, input);
       setInput("");
     }
+    // refreshState();
   };
 
   return currentMatch ? (
@@ -107,7 +127,7 @@ const ChatScreen = ({ currentMatch, conversation }) => {
         Chat with {currentMatch.firstName} {currentMatch.lastName}
       </h2>
       <div className="border rounded overflow-y-auto mb-4 p-4 h-[50vh]">
-        {conversation.map((message, index) => (
+        {conversation.messages.map((message, index) => (
           <div key={index}>
             <div className="mb-4 p-2 rounded bg-gray-100">
               {message.messageText}
@@ -171,7 +191,7 @@ function App() {
   const [currentProfile, setCurrentProfile] = useState(null);
   const [matches, setMatches] = useState([]);
   const [currentMatchAndConversation, setCurrentMatchAndConversation] =
-    useState({ match: {}, conversation: [] });
+    useState({ match: {}, conversation: {} });
 
   const onSwipe = async (profileId, direction) => {
     // We've to load next random profile either liked or disliked current profile
@@ -191,9 +211,27 @@ function App() {
     const conversation = await fetchConversation(conversationId);
     setCurrentMatchAndConversation({
       match: profile,
-      conversation: conversation.messages,
+      conversation: conversation,
     });
     setCurrentScreen("chat");
+  };
+
+  // const refreshChatState = async () => {
+  //   const conv = await fetchConversation(
+  //     currentMatchAndConversation.conversation.id
+  //   );
+  //   setCurrentMatchAndConversation({
+  //     match: currentMatchAndConversation.match,
+  //     conversation: conv,
+  //   });
+  //   console.log(currentMatchAndConversation);
+  // };
+  const onChatMessageSend = async (conversationId, message) => {
+    const conv = await sendMessage(conversationId, message);
+    setCurrentMatchAndConversation({
+      match: currentMatchAndConversation.match,
+      conversation: conv,
+    });
   };
 
   const renderScreen = () => {
@@ -210,6 +248,7 @@ function App() {
           <ChatScreen
             currentMatch={currentMatchAndConversation.match}
             conversation={currentMatchAndConversation.conversation}
+            onSend={onChatMessageSend}
           />
         );
     }
