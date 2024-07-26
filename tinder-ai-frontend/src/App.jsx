@@ -1,162 +1,148 @@
-import { useEffect, useState } from 'react';
-import './App.css'
-import { User, MessageCircle, X, Heart } from 'lucide-react'
+import { Heart, MessageCircle, User, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import "./App.css";
+import { MatchesList } from "./MatchesList";
 
-
-const host = 'http://localhost:8080/';
+const host = "http://localhost:8080/";
 
 const fetchRandomProfile = async () => {
-  var endpoint = host + 'profiles/random';
-  const response = await fetch(endpoint)
+  var endpoint = host + "profiles/random";
+  const response = await fetch(endpoint);
 
-  if (!response.ok)
-    throw new Error('Failed to fetch random profile')
+  if (!response.ok) throw new Error("Failed to fetch random profile");
 
   return response.json();
-}
+};
 
 const saveMatch = async (profileId) => {
-  var endpoint = host + 'matches';
+  var endpoint = host + "matches";
   const response = await fetch(endpoint, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json'
+      "Content-Type": "application/json",
     },
-    body: JSON.stringify({ profileId })
-  })
+    body: JSON.stringify({ profileId }),
+  });
 
-  if (!response.ok)
-    throw new Error('Failed to fetch random profile')
+  if (!response.ok) throw new Error("Failed to fetch random profile");
 
   return response.json();
-}
+};
 
 const fetchMatches = async () => {
-  var endpoint = host + 'matches';
-  const response = await fetch(endpoint)
+  var endpoint = host + "matches";
+  const response = await fetch(endpoint);
 
-  if (!response.ok)
-    throw new Error('Failed to fetch Matches')
+  if (!response.ok) throw new Error("Failed to fetch Matches");
 
   return response.json();
-}
+};
 
+const fetchConversation = async (conversationId) => {
+  var endpoint = host + "conversations/" + conversationId;
+  const response = await fetch(endpoint);
 
+  if (!response.ok) throw new Error("Failed to fetch Conversation");
+
+  return response.json();
+};
 
 /**
  * Profile selector
- * @returns 
+ * @returns
  */
-const ProfileSelector = ({ profile, onSwipe }) => (
+const ProfileSelector = ({ profile, onSwipe }) =>
   profile ? (
-    <div className='rounded-lg overflow-hidden bg-white shadow-lg'>
-      <div className='relative'>
-        <img src={host + '/images/' + profile.imageUrl} alt='' />
-        <div className='absolute bottom-0 left-0 right-0 text-white p-4 bg-gradient-to-t from-black'>
-          <h2 className='text-3xl font-bold'>{profile.firstName} {profile.lastName}, {profile.age}</h2>
+    <div className="rounded-lg overflow-hidden bg-white shadow-lg">
+      <div className="relative">
+        <img src={host + "/images/" + profile.imageUrl} alt="" />
+        <div className="absolute bottom-0 left-0 right-0 text-white p-4 bg-gradient-to-t from-black">
+          <h2 className="text-3xl font-bold">
+            {profile.firstName} {profile.lastName}, {profile.age}
+          </h2>
         </div>
       </div>
 
-      <div className='p-4'>
-        <p className='text-gray-600 mb-'>{profile.bio}</p>
+      <div className="p-4">
+        <p className="text-gray-600 mb-">{profile.bio}</p>
       </div>
 
       {/* Swipe Buttons */}
-      <div className='flex justify-center space-x-4 p-4'>
-        <button className='bg-red-500 rounded-full p-4 text-white hover:bg-red-700'
-          onClick={() => onSwipe(profile.id, "left")}>
+      <div className="flex justify-center space-x-4 p-4">
+        <button
+          className="bg-red-500 rounded-full p-4 text-white hover:bg-red-700"
+          onClick={() => onSwipe(profile.id, "left")}
+        >
           <X size={24} />
         </button>
-        <button className='bg-green-500 rounded-full p-4 text-white hover:bg-green-700'
-          onClick={() => onSwipe(profile.id, "right")}>
+        <button
+          className="bg-green-500 rounded-full p-4 text-white hover:bg-green-700"
+          onClick={() => onSwipe(profile.id, "right")}
+        >
           <Heart size={24} />
         </button>
       </div>
     </div>
-  ) : <div> Loading ...</div>
-)
+  ) : (
+    <div> Loading ...</div>
+  );
 
 /**
- * 
- * @returns 
+ *
+ * @returns
  */
-const MatchesList = ({ matches, onSelectMatch }) => (
-  <div className='rounded-lg shadow-lg p-4'>
-    <h2 className='text-2xl font-bold mb-4'>Matches</h2>
-    <ul >
-
-      {matches.map(match => (
-        <li key={match.id} className='mb-2'>
-          <button
-            className='flex w-full hover:bg-gray-100 rounded items-center'
-            onClick={onSelectMatch}
-          >
-            <img src={host + '/images/' + match.profile.imageUrl} alt="" className='size-20 mr-4 rounded-full' />
-            <span>
-              <h3 className='font-bold'>{match.profile.firstName} {match.profile.lastName}</h3>
-            </span>
-          </button>
-        </li>
-      ))}
-    </ul>
-  </div>
-);
-
-
-/**
- * 
- * @returns 
- */
-const ChatScreen = () => {
-  const [input, setInput] = useState('');
+const ChatScreen = ({ currentMatch, conversation }) => {
+  const [input, setInput] = useState("");
 
   const handleSend = () => {
     if (input.trim()) {
       console.log(input);
-      setInput('');
+      setInput("");
     }
-  }
+  };
 
-  return (
-    <div className='rounded-lg shadow-lg p-4'>
-      <h2 className='text-2xl font-bold mb-4'>Chat with Foo Bar</h2>
-      <div className='border rounded overflow-y-auto mb-4 p-4 h-[50vh]'>
-        {[
-          "Hi",
-          "How are you??"
-        ].map((message, index) => (
+  return currentMatch ? (
+    <div className="rounded-lg shadow-lg p-4">
+      <h2 className="text-2xl font-bold mb-4">
+        Chat with {currentMatch.firstName} {currentMatch.lastName}
+      </h2>
+      <div className="border rounded overflow-y-auto mb-4 p-4 h-[50vh]">
+        {conversation.map((message, index) => (
           <div key={index}>
-            <div className='mb-4 p-2 rounded bg-gray-100'>{message} </div>
+            <div className="mb-4 p-2 rounded bg-gray-100">
+              {message.messageText}
+            </div>
           </div>
-        ))
-        }
+        ))}
       </div>
 
       {/* Chat input */}
-      <div className='flex'>
+      <div className="flex">
         <input
-          type='text'
+          type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className='flex-1 rounded p-2  mr-2 border'
-          placeholder='Type a message...'
+          className="flex-1 rounded p-2  mr-2 border"
+          placeholder="Type a message..."
         />
         <button
-          className='bg-blue-500 text-white rounded p-2'
+          className="bg-blue-500 text-white rounded p-2"
           onClick={handleSend}
-        >Send</button>
+        >
+          Send
+        </button>
       </div>
     </div>
-  )
-
-}
+  ) : (
+    <div> Loading ...</div>
+  );
+};
 
 /**
- * 
- * @returns 
+ *
+ * @returns
  */
 function App() {
-
   const loadRandomProfile = async () => {
     try {
       const profile = await fetchRandomProfile();
@@ -164,7 +150,7 @@ function App() {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   const loadMatches = async () => {
     try {
@@ -173,55 +159,71 @@ function App() {
     } catch (error) {
       console.error(error);
     }
-  }
-
+  };
 
   // side effect to call the loadRandomProfile when App() is loaded
   useEffect(() => {
     loadRandomProfile();
     loadMatches();
-  }, {})
+  }, {});
 
-  const [currentScreen, setCurrentScreen] = useState('profile') // Default value of current screen is profile
-  const [currentProfile, setCurrentProfile] = useState(null)
-  const [matches, setMatches] = useState([])
+  const [currentScreen, setCurrentScreen] = useState("profile"); // Default value of current screen is profile
+  const [currentProfile, setCurrentProfile] = useState(null);
+  const [matches, setMatches] = useState([]);
+  const [currentMatchAndConversation, setCurrentMatchAndConversation] =
+    useState({ match: {}, conversation: [] });
 
   const onSwipe = async (profileId, direction) => {
-    if (direction === 'right') {
+    // We've to load next random profile either liked or disliked current profile
+    loadRandomProfile();
+    if (direction === "right") {
       // Register a Match with the backed
-      console.log('liked')
+      console.log("liked");
       await saveMatch(profileId);
       await loadMatches();
     } else {
-      console.log('disliked')
+      console.log("disliked");
     }
-    loadRandomProfile();
-  }
+  };
 
+  const onSelectMatch = async (profile, conversationId) => {
+    console.log("selected match ", profile.firstName);
+    const conversation = await fetchConversation(conversationId);
+    setCurrentMatchAndConversation({
+      match: profile,
+      conversation: conversation.messages,
+    });
+    setCurrentScreen("chat");
+  };
 
   const renderScreen = () => {
     switch (currentScreen) {
-      case 'profile':
-        return <ProfileSelector profile={currentProfile} onSwipe={onSwipe} />
-      case 'matches':
+      case "profile":
+        return <ProfileSelector profile={currentProfile} onSwipe={onSwipe} />;
+
+      case "matches":
         // loadMatches();
-        return <MatchesList matches={matches} onSelectMatch={() => { setCurrentScreen('chat') }} />
-      case 'chat':
-        return <ChatScreen />
+        return <MatchesList matches={matches} onSelectMatch={onSelectMatch} />;
+
+      case "chat":
+        return (
+          <ChatScreen
+            currentMatch={currentMatchAndConversation.match}
+            conversation={currentMatchAndConversation.conversation}
+          />
+        );
     }
-  }
+  };
 
   return (
-
-    <div className='max-w-md mx-auto p-4'>
-      <nav className='flex justify-between'>
-        <User onClick={() => setCurrentScreen('profile')} />
-        <MessageCircle onClick={() => setCurrentScreen('matches')} />
+    <div className="max-w-md mx-auto p-4">
+      <nav className="flex justify-between">
+        <User onClick={() => setCurrentScreen("profile")} />
+        <MessageCircle onClick={() => setCurrentScreen("matches")} />
       </nav>
       {renderScreen()}
     </div>
-
-  )
+  );
 }
 
-export default App
+export default App;
