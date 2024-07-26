@@ -1,19 +1,30 @@
 quarkus:
   application:
     name: tinder-ai-backend
-  
+
   http:
     cors:
       ~: true
       origins: "*"
 
   langchain4j:
+    m1:
+      chat-model:
+        provider: openai
     openai:
-      api-key: ${QUARKUS_AI_OPEN_AI_API_KEY}
+      m1:
+        api-key: ${QUARKUS_AI_OPEN_AI_API_KEY}
 
+    m2:
+      chat-model:
+        provider: ollama
+    ollama:
+      chat-model:
+        model-id: llama3.1
 
   # Mongo DB
   mongodb:
     devservices:
       port: 63556
     database: tinder-ai
+# .ollama.chat-model.model-id=mistral
